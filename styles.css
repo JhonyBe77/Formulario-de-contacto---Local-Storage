@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 100px;
-    background-color:#98ff96;
+    background-color:#57CAFC;
 }
 
 form {
@@ -23,7 +23,7 @@ button {
     padding: 10px 15px;
     margin-right: 5px;
     color: white;
-    background-color: #5ccb5f;
+    background-color: #3A8EE4;
     border: 0;
 }
 
@@ -33,11 +33,11 @@ ul {
 }
 
 h1 {
-    color: #006414;
+    color: white;
 }
 
 h2 {
-    color: #006414;
+    color: white;
 }
 
 #clearAll {
