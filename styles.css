@@ -1,0 +1,45 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 100px;
+    background-color:#98ff96;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 15px;
+    margin-right: 5px;
+    color: white;
+    background-color: #5ccb5f;
+    border: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+h1 {
+    color: #006414;
+}
+
+h2 {
+    color: #006414;
+}
+
+#clearAll {
+    background-color: red;
+}
