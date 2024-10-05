@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let formularioDeContacto = document.getElementById("contactForm");
     let listaDeContactos = document.getElementById("contactList");
     let botonBorrarTodos = document.getElementById("clearAll");
-    
+    let indiceEdicion = null; // para almacenar el índice del contacto que se está editando
+
     mostrarContactos(); // llamar para mostrar los contactos guardados al cargar la página
 
     // cuando el formulario se envía
@@ -15,18 +16,20 @@ document.addEventListener("DOMContentLoaded", function() {
         let email = document.getElementById("email").value;
         let mensaje = document.getElementById("mensaje").value;
         let urlImagen = document.getElementById("imageUrl").value;
-        /*
-        // crear un objeto con los datos del contacto
-        let contacto = {
-            nombre: nombre,
-            email: email,
-            mensaje: mensaje,
-            urlImagen: urlImagen
-        };
-        */
-       //// array con los objetos
+
+        // Crear el objeto contacto con los datos del formulario
         const contacto = { nombre, email, mensaje, urlImagen };
-        guardarContacto(contacto);
+
+        if (indiceEdicion === null) {
+            // Si no estamos editando, agregar un nuevo contacto
+            guardarContacto(contacto);
+        } else {
+            // Si estamos editando, actualizar el contacto existente
+            actualizarContacto(contacto, indiceEdicion);
+            indiceEdicion = null; // resetear el índice de edición
+            formularioDeContacto.querySelector("button[type='submit']").textContent = "Agregar Contacto"; // cambiar el texto del botón
+        }
+
         formularioDeContacto.reset(); // reiniciar el formulario
         mostrarContactos(); // actualizar la lista
     });
@@ -36,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let contactosGuardados = obtenerContactos();
         contactosGuardados.push(contacto); // añadir el nuevo contacto al array
         localStorage.setItem("contactos", JSON.stringify(contactosGuardados)); // guardar el array en localStorage
+        mostrarContactos(); // Actualizar el DOM inmediatamente después de guardar
     }
 
     // función para obtener los contactos guardados del almacenamiento local
@@ -57,6 +61,9 @@ document.addEventListener("DOMContentLoaded", function() {
         for (let i = 0; i < contactos.length; i++) {
             let contacto = contactos[i];
             let elementoLista = document.createElement("li");
+            
+            // añadir la clase contact-item
+            elementoLista.classList.add("contact-item");
 
             // crear el contenido del contacto
             let contenidoContacto = "<strong>" + contacto.nombre + "</strong> (" + contacto.email + ")<br>" + contacto.mensaje;
@@ -68,10 +75,11 @@ document.addEventListener("DOMContentLoaded", function() {
             
             elementoLista.innerHTML = contenidoContacto;
 
-            // este es el botón para borrar
+            // Botón para borrar
             let botonBorrar = document.createElement("button");
             botonBorrar.textContent = "Borrar";
             botonBorrar.dataset.indice = i; // guardar el índice del contacto en el botón
+            botonBorrar.classList.add("btn-borrar");
 
             // cuando se hace clic en el botón de borrar
             botonBorrar.addEventListener("click", function() {
@@ -79,8 +87,21 @@ document.addEventListener("DOMContentLoaded", function() {
                 borrarContacto(indice);
             });
 
-            // añadir el botón al elemento de la lista
+            // BOTON EDITAR
+            let botonEditar = document.createElement("button");
+            botonEditar.textContent = "Editar";
+            botonEditar.dataset.indice = i; // guardar el índice del contacto en el botón
+            botonEditar.classList.add("btn-editar");
+
+            // cuando se hace clic en el botón de editar
+            botonEditar.addEventListener("click", function() {
+                let indice = this.dataset.indice;
+                cargarContactoEnFormulario(indice);
+            });
+
+            // añadir los botones al elemento de la lista
             elementoLista.appendChild(botonBorrar);
+            elementoLista.appendChild(botonEditar);
 
             // añadir el contacto a la lista
             listaDeContactos.appendChild(elementoLista);
@@ -93,6 +114,33 @@ document.addEventListener("DOMContentLoaded", function() {
         contactos.splice(indice, 1); // quitar el contacto de la lista
         localStorage.setItem("contactos", JSON.stringify(contactos)); // guardar la nueva lista en el almacenamiento local
         mostrarContactos(); // volver a mostrar la lista de contactos actualizada
+    }
+
+    // función para cargar los datos de un contacto en el formulario
+    function cargarContactoEnFormulario(indice) {
+        let contactos = obtenerContactos();
+        let contacto = contactos[indice];
+
+        // cargar los datos del contacto en el formulario
+        document.getElementById("nombre").value = contacto.nombre;
+        document.getElementById("email").value = contacto.email;
+        document.getElementById("mensaje").value = contacto.mensaje;
+        document.getElementById("imageUrl").value = contacto.urlImagen;
+
+        // cambiar el texto del botón de enviar a "Actualizar"
+        let botonEnviar = document.querySelector("#contactForm button[type='submit']");
+        botonEnviar.textContent = "Actualizar";
+
+        // guardar el índice del contacto que se está editando
+        indiceEdicion = indice;
+    }
+
+    // Fstunción para actualizar un contacto
+    function actualizarContacto(contacto, indice) {
+        let contactos = obtenerContactos();
+        contactos[indice] = contacto; // actualizar el contacto en la posición correspondiente
+        localStorage.setItem("contactos", JSON.stringify(contactos)); // guardar los contactos actualizados en localStorage
+        mostrarContactos(); // Mostrar inmediatamente los cambios en el DOM
     }
 
     // evento para borrar todos los contactos
